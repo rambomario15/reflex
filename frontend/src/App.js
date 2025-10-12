@@ -1,25 +1,11 @@
-import logo from './logo.svg';
-import './App.css';
+import express from "express";
+import cors from "cors";
+import authRoutes from "./api/routes/auth.js";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-export default App;
+app.use("/api", authRoutes);
+
+app.listen(3000, () => console.log("Server running on port 3000"));
