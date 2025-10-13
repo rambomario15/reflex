@@ -47,6 +47,13 @@ function LoginPage() {
         />
         <button type="submit">Login</button>
       </form>
+      <br />
+      <button
+        onClick={() => (window.location.href = "/signup")}
+        style={{ padding: "0.5rem", cursor: "pointer" }}
+      >
+        Sign Up
+      </button>
       <p>{message}</p>
     </div>
   );
