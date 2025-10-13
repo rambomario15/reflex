@@ -29,7 +29,7 @@ function LoginPage() {
 
   return (
     <div>
-      <h2>Login Papple</h2>
+      <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
