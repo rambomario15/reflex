@@ -14,8 +14,8 @@ Steps to run WebServer:
     - replace password with your password
     - the database should be called ReflexDB, if not change to whatever you named it to be
 - run "npx prisma generate"
-- run "npx prisma migrate deploy"
-- now you should be able to run "node index.js" to start the server
+- you might need to run "npx prisma migrate deploy"
+- now you should be able to run "node index.js" to start the server, make sure you are in the correct folder
 - open a new terminal, and cd into /frontend
 - run "npm install"
 - run "npm start"
