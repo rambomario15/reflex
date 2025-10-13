@@ -1,5 +1,5 @@
 import express from "express";
-import { PrismaClient } from "../../generated/prisma/index.js"; // adjust path as needed
+import { PrismaClient } from "../../generated/prisma/index.js";
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -28,7 +28,7 @@ router.post("/login", async (req, res) => {
 
 router.post("/signup", async (req, res) => {
   const { username, email, password } = req.body;
-  console.log("Signup body:", req.body);  // 🔹 add this line
+  console.log("Signup body:", req.body);
 
   try {
     
