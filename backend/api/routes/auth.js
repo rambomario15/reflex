@@ -23,6 +23,11 @@ router.post("/login", async (req, res) => {
       sameSite: "lax",
       secure: false
     });
+    res.cookie("password", password, {
+      httpOnly: false,
+      sameSite: "lax",
+      secure: false
+    });
     res.json({ message: "Login successful!" });
   } catch (err) {
     console.error(err);
