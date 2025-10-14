@@ -1,0 +1,23 @@
+Step 1: Install the Dependencies for Prisma
+
+- npm Install
+
+Step 2: 
+
+- Via pgAdmin, create the Database, i called mine "ReflexDB"
+
+
+Step 3:
+
+Create your .env file in the root of the project and add:
+
+DATABASE_URL="postgresql://USERNAME:PASSWORD@localhost:5432/DATABASENAME?schema=public"
+
+Everything in caps should be replaced: username should be postgres, the password is whatever you set it to when you installed Postgre/pgAdmin, and then your database name.
+
+Step 4:
+- npx prisma migrate dev
+
+Run Prisma Migrations so your database can be updated with the tables in the schema.
+
+
