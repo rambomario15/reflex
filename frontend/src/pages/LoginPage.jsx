@@ -2,19 +2,20 @@ import React, { useState } from "react";
 import axios from "axios";
 
 function LoginPage() {
+
   const [form, setForm] = useState({ username: "", password: "" });
   const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:5000/auth/login", form);
-      setMessage(res.data.message || "Login successful!");
+      const res = await axios.post("http://localhost:5000/auth/login", form, {
+        withCredentials: true,
+      }); setMessage(res.data.message || "Login successful!");
     } catch (err) {
       const data = err.response?.data;
       if (data?.expected) {
@@ -53,6 +54,12 @@ function LoginPage() {
         style={{ padding: "0.5rem", cursor: "pointer" }}
       >
         Sign Up
+      </button>
+      <button
+        onClick={() => (window.location.href = "/profile")}
+        style={{ padding: "0.5rem", cursor: "pointer", marginLeft: "1rem" }}
+      >
+        Profile Page
       </button>
       <p>{message}</p>
     </div>

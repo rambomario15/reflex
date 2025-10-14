@@ -18,7 +18,11 @@ router.post("/login", async (req, res) => {
         expected: user.password,
       });
     }
-
+    res.cookie("username", username, {
+      httpOnly: false,
+      sameSite: "lax",
+      secure: false
+    });
     res.json({ message: "Login successful!" });
   } catch (err) {
     console.error(err);
@@ -31,7 +35,7 @@ router.post("/signup", async (req, res) => {
   console.log("Signup body:", req.body);
 
   try {
-    
+
     if (!username || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
@@ -65,5 +69,19 @@ router.post("/signup", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
+router.post("/profile", async (req, res) => {
+  const cookieHeader = req.headers.cookie;
+  if (cookieHeader) {
+    const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
+      const parts = cookie.split('=');
+      if (parts.length === 2) {
+        acc[parts[0].trim()] = parts[1].trim();
+      }
+      return acc;
+    }, {});
+    res.send(`Manual cookie value: ${cookies.myManualCookie || 'Not found'}`);
+  } else {
+    res.send('No cookies found.');
+  }
+});
 export default router;
