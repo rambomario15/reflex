@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import '../style/style.css'; // Adjust the path as needed
+
 function ProfilePage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("")
@@ -34,7 +36,7 @@ function ProfilePage() {
         <div>
             <h2>Profile Page</h2>
             {username ? (
-                <div>
+                <div class="profile-info">
                     <p>Username: {username}</p>
                     <p>Password: {password}</p>
                 </div>

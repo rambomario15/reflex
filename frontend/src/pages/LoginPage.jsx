@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import '../style/style.css'; // Adjust the path as needed
 
 function LoginPage() {
 
@@ -29,8 +30,8 @@ function LoginPage() {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
+    <div class="login-page">
+      <h1>Login</h1>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -38,6 +39,8 @@ function LoginPage() {
           placeholder="Username"
           value={form.username}
           onChange={handleChange}
+          style={{ marginRight: '5px' }}
+
         />
         <input
           type="password"
@@ -45,19 +48,21 @@ function LoginPage() {
           placeholder="Password"
           value={form.password}
           onChange={handleChange}
+          style={{ marginRight: '5px' }}
+
         />
         <button type="submit">Login</button>
       </form>
       <br />
       <button
         onClick={() => (window.location.href = "/signup")}
-        style={{ padding: "0.5rem", cursor: "pointer" }}
+        style={{ padding: "0.5rem", cursor: "pointer", width: "100px" }}
       >
         Sign Up
       </button>
       <button
         onClick={() => (window.location.href = "/profile")}
-        style={{ padding: "0.5rem", cursor: "pointer", marginLeft: "1rem" }}
+        style={{ padding: "0.5rem", cursor: "pointer", marginLeft: "1rem", width: "100px" }}
       >
         Profile Page
       </button>
