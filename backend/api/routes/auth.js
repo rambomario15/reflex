@@ -21,12 +21,14 @@ router.post("/login", async (req, res) => {
     res.cookie("username", username, {
       httpOnly: false,
       sameSite: "lax",
-      secure: false
+      secure: false,
+      path: '/',
     });
     res.cookie("password", password, {
       httpOnly: false,
       sameSite: "lax",
-      secure: false
+      secure: false,
+      path: '/',
     });
     res.json({ message: "Login successful!" });
   } catch (err) {
@@ -74,19 +76,9 @@ router.post("/signup", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-router.post("/profile", async (req, res) => {
-  const cookieHeader = req.headers.cookie;
-  if (cookieHeader) {
-    const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
-      const parts = cookie.split('=');
-      if (parts.length === 2) {
-        acc[parts[0].trim()] = parts[1].trim();
-      }
-      return acc;
-    }, {});
-    res.send(`Manual cookie value: ${cookies.myManualCookie || 'Not found'}`);
-  } else {
-    res.send('No cookies found.');
-  }
+router.post("/logout", (req, res) => {
+  res.clearCookie("username", { path: "/" });
+  res.clearCookie("password", { path: "/" });
+  res.json({ message: "Logged out successfully" });
 });
 export default router;

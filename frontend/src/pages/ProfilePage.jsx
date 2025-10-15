@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import axios from "axios";
 function ProfilePage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("")
@@ -16,6 +16,20 @@ function ProfilePage() {
             setPassword(value);
         }
     }, []);
+    const logout = async (e) => {
+        try {
+            const res = await axios.post("http://localhost:5000/auth/logout", {}, {
+                withCredentials: true,
+            });
+            alert(res.data.message || "Logged out successfully!");
+            setUsername("");
+            setPassword("");
+            window.location.href = "/";
+        } catch (err) {
+            const data = err.response?.data;
+            alert(data?.error || "Logout failed.");
+        }
+    };
     return (
         <div>
             <h2>Profile Page</h2>
@@ -35,6 +49,13 @@ function ProfilePage() {
             >
                 Login Page
             </button>
+            <button
+                onClick={logout}
+                style={{ padding: "0.5rem", cursor: "pointer", marginLeft: "1rem" }}
+            >
+                Logout
+            </button>
+
         </div>
     );
 }
