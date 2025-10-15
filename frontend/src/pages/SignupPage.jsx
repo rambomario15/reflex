@@ -65,7 +65,7 @@ function SignupPage() {
         <button type="submit" style={{ padding: "0.5rem", cursor: "pointer" }}>
           Sign Up
         </button>
-         <button onClick={() => (window.location.href = "/")} style={{ padding: "0.5rem", cursor: "pointer" }}>
+        <button onClick={() => (window.location.href = "/")} style={{ padding: "0.5rem", cursor: "pointer" }}>
           Login Page
         </button>
       </form>
