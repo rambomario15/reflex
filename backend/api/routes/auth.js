@@ -1,5 +1,7 @@
 import express from "express";
 import { PrismaClient } from "../../generated/prisma/index.js";
+import bcrypt from "bcrypt";
+
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -12,12 +14,14 @@ router.post("/login", async (req, res) => {
 
     if (!user) return res.status(400).json({ error: "User not found" });
 
-    if (password !== user.password) {
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
       return res.status(400).json({
         error: "Invalid password",
-        expected: user.password,
       });
     }
+
     res.cookie("username", username, {
       httpOnly: false,
       sameSite: "lax",
@@ -37,29 +41,34 @@ router.post("/login", async (req, res) => {
   }
 });
 
+
 router.post("/signup", async (req, res) => {
   const { username, email, password } = req.body;
   console.log("Signup body:", req.body);
 
   try {
-
     if (!username || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
+
     const existingUser = await prisma.users.findFirst({
       where: { OR: [{ username }, { email }] },
     });
+
     if (existingUser) {
       return res
         .status(409)
         .json({ message: "Username or email already exists" });
     }
 
+ 
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     const newUser = await prisma.users.create({
       data: {
         username,
         email,
-        password,
+        password: hashedPassword,
       },
     });
 
