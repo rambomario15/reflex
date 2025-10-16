@@ -32,8 +32,9 @@ function LoginPage() {
   return (
     <div class="login-page">
       <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} class="form">
         <input
+          class="input-group"
           type="text"
           name="username"
           placeholder="Username"
@@ -43,6 +44,7 @@ function LoginPage() {
 
         />
         <input
+          class="input-group"
           type="password"
           name="password"
           placeholder="Password"
@@ -51,16 +53,18 @@ function LoginPage() {
           style={{ marginRight: '5px' }}
 
         />
-        <button type="submit">Login</button>
+        <button class="btn" type="submit">Login</button>
       </form>
       <br />
       <button
+        class="btn"
         onClick={() => (window.location.href = "/signup")}
         style={{ padding: "0.5rem", cursor: "pointer", width: "100px" }}
       >
         Sign Up
       </button>
       <button
+        class="btn"
         onClick={() => (window.location.href = "/profile")}
         style={{ padding: "0.5rem", cursor: "pointer", marginLeft: "1rem", width: "100px" }}
       >
