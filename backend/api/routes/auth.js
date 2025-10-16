@@ -14,7 +14,7 @@ router.post("/login", async (req, res) => {
 
     if (!user) return res.status(400).json({ error: "User not found" });
 
-    // --- COMPARE HASHED PASSWORD ---
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({
@@ -59,14 +59,14 @@ router.post("/signup", async (req, res) => {
         .json({ message: "Username or email already exists" });
     }
 
-    // --- HASH PASSWORD ---
-    const hashedPassword = await bcrypt.hash(password, 10); // 10 is salt rounds
+ 
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await prisma.users.create({
       data: {
         username,
         email,
-        password: hashedPassword, // store hashed password
+        password: hashedPassword,
       },
     });
 
