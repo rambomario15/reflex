@@ -320,3 +320,10 @@ textarea:focus {
 .hidden { display:none !important; }
 .muted { color: var(--muted); }
 .bold { font-weight:700; }
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 12px 0 12px 0;
+  font-family:monospace;
+}

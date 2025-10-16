@@ -34,7 +34,7 @@ function ProfilePage() {
     };
     return (
         <div>
-            <h2>Profile Page</h2>
+            <h2 class="title">Profile Page</h2>
             {username ? (
                 <div class="profile-info">
                     <p>Username: {username}</p>
@@ -46,12 +46,14 @@ function ProfilePage() {
             )}
             <br />
             <button
+                class="btn"
                 onClick={() => (window.location.href = "/")}
                 style={{ padding: "0.5rem", cursor: "pointer" }}
             >
                 Login Page
             </button>
             <button
+                class="btn"
                 onClick={logout}
                 style={{ padding: "0.5rem", cursor: "pointer", marginLeft: "1rem" }}
             >

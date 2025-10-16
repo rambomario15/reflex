@@ -43,6 +43,7 @@ function SignupPage() {
         style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
       >
         <input
+          class="input-group"
           type="text"
           placeholder="Username"
           value={username}
@@ -50,6 +51,7 @@ function SignupPage() {
           required
         />
         <input
+          class="input-group"
           type="email"
           placeholder="Email"
           value={email}
@@ -57,16 +59,17 @@ function SignupPage() {
           required
         />
         <input
+          class="input-group"
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit" style={{ padding: "0.5rem", cursor: "pointer" }}>
+        <button class="btn" type="submit" style={{ padding: "0.5rem", cursor: "pointer" }}>
           Sign Up
         </button>
-        <button onClick={() => (window.location.href = "/")} style={{ padding: "0.5rem", cursor: "pointer" }}>
+        <button class="btn" onClick={() => (window.location.href = "/")} style={{ padding: "0.5rem", cursor: "pointer" }}>
           Login Page
         </button>
       </form>
