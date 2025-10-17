@@ -100,4 +100,34 @@ router.post("/profile", async (req, res) => {
     res.send('No cookies found.');
   }
 });
+
+router.post("/change-password", async (req, res) => {
+  const { username, currentPassword, newPassword } = req.body;
+
+  try {
+    const user = await prisma.users.findUnique({ where: { username } });
+
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: "Current password is incorrect" });
+    }
+
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+
+    await prisma.users.update({
+      where: { username },
+      data: { password: hashedNewPassword },
+    });
+
+    res.json({ message: "Password updated successfully" });
+  } catch (err) {
+    console.error("Change password error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 export default router;

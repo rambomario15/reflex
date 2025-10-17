@@ -63,10 +63,7 @@ function SignupPage() {
           required
         />
         <button type="submit" style={{ padding: "0.5rem", cursor: "pointer" }}>
-          Sign Up
-        </button>
-        <button onClick={() => (window.location.href = "/")} style={{ padding: "0.5rem", cursor: "pointer" }}>
-          Login Page
+          Create Account
         </button>
       </form>
       {message && <p style={{ marginTop: "1rem" }}>{message}</p>}

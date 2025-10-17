@@ -1,21 +1,31 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
-
   const [form, setForm] = useState({ username: "", password: "" });
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const res = await axios.post("http://localhost:5000/auth/login", form, {
         withCredentials: true,
-      }); setMessage(res.data.message || "Login successful!");
+      });
+
+      setMessage(res.data.message || "Login successful!");
+
+      localStorage.setItem("loggedIn", "true");
+      localStorage.setItem("username", form.username);
+
+      navigate("/profile");
+
     } catch (err) {
       const data = err.response?.data;
       if (data?.expected) {
@@ -48,19 +58,6 @@ function LoginPage() {
         />
         <button type="submit">Login</button>
       </form>
-      <br />
-      <button
-        onClick={() => (window.location.href = "/signup")}
-        style={{ padding: "0.5rem", cursor: "pointer" }}
-      >
-        Sign Up
-      </button>
-      <button
-        onClick={() => (window.location.href = "/profile")}
-        style={{ padding: "0.5rem", cursor: "pointer", marginLeft: "1rem" }}
-      >
-        Profile Page
-      </button>
       <p>{message}</p>
     </div>
   );
