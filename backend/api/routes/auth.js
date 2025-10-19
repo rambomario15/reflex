@@ -1,6 +1,7 @@
 import express from "express";
 import { PrismaClient } from "../../generated/prisma/index.js";
 import bcrypt from "bcrypt";
+import e from "express";
 
 
 const router = express.Router();
@@ -13,22 +14,15 @@ router.post("/login", async (req, res) => {
     const user = await prisma.users.findUnique({ where: { username } });
 
     if (!user) return res.status(400).json({ error: "User not found" });
-
-
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({
-        error: "Invalid password",
+        error: "Wrong password",
+        expected: true,
       });
     }
 
     res.cookie("username", username, {
-      httpOnly: false,
-      sameSite: "lax",
-      secure: false,
-      path: '/',
-    });
-    res.cookie("password", password, {
       httpOnly: false,
       sameSite: "lax",
       secure: false,
@@ -44,7 +38,6 @@ router.post("/login", async (req, res) => {
 
 router.post("/signup", async (req, res) => {
   const { username, email, password } = req.body;
-  console.log("Signup body:", req.body);
 
   try {
     if (!username || !email || !password) {
@@ -61,7 +54,7 @@ router.post("/signup", async (req, res) => {
         .json({ message: "Username or email already exists" });
     }
 
- 
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await prisma.users.create({
@@ -87,7 +80,6 @@ router.post("/signup", async (req, res) => {
 });
 router.post("/logout", (req, res) => {
   res.clearCookie("username", { path: "/" });
-  res.clearCookie("password", { path: "/" });
   res.json({ message: "Logged out successfully" });
 });
 export default router;

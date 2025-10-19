@@ -16,12 +16,13 @@ function LoginPage() {
     try {
       const res = await axios.post("http://localhost:5000/auth/login", form, {
         withCredentials: true,
-      }); setMessage(res.data.message || "Login successful!");
+      });
+      setMessage(res.data.message || "Login successful!");
     } catch (err) {
       const data = err.response?.data;
-      if (data?.expected) {
+      if (data?.error == "Invalid password") {
         setMessage(
-          `Invalid password. For testing, the correct password is: ${data.expected}`
+          `Incorrect Password`
         );
       } else {
         setMessage(data?.error || "Login failed.");
@@ -31,7 +32,7 @@ function LoginPage() {
 
   return (
     <div class="login-page">
-      <h1>Login</h1>
+      <h1 class="title">Login</h1>
       <form onSubmit={handleSubmit} class="form">
         <input
           class="input-group"
