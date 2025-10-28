@@ -21,14 +21,12 @@ function LoginPage() {
 
       setMessage(res.data.message || "Login successful!");
 
-      localStorage.setItem("loggedIn", "true");
       localStorage.setItem("username", form.username);
-
       navigate("/profile");
 
     } catch (err) {
       const data = err.response?.data;
-      if (data?.error == "Invalid password") {
+      if (data?.error === "Invalid password") {
         setMessage(
           `Incorrect Password`
         );

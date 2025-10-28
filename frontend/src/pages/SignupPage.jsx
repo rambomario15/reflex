@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import '../style/style.css'; // Adjust the path as needed
+// import '../style/style.css'; // Adjust the path as needed
 
 function SignupPage() {
   const [username, setUsername] = useState("");

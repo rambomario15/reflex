@@ -1,38 +1,46 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function ProfilePage() {
     const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [message, setMessage] = useState("");
     const [showForm, setShowForm] = useState(false);
+    const [lastLogin, setLastLogin] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const cookies = document.cookie.split("; ");
-        const userCookie = cookies.find((row) => row.startsWith("username="));
-        if (userCookie) {
-            const value = userCookie.split("=")[1];
-            setUsername(value);
-        }
-    }, []);
+        const storedUsername = localStorage.getItem("username");
+        if (storedUsername) {
+            setUsername(storedUsername);
+            setLastLogin(localStorage.getItem("createdAt") || "N/A");
+        } else { }
+    }, [navigate]);
 
     const handlePasswordChange = async (e) => {
         e.preventDefault();
+
+        if (!username) {
+            setMessage("Error: Cannot change password without a username.");
+            return;
+        }
+
         try {
             const res = await axios.post("http://localhost:5000/auth/change-password", {
                 username,
                 currentPassword,
                 newPassword,
+            }, {
+                withCredentials: true,
             });
+
             setMessage(res.data.message);
             setCurrentPassword("");
             setNewPassword("");
             setShowForm(false);
 
-            
-            document.cookie = `password=${newPassword}; path=/`;
         } catch (err) {
             setMessage(err.response?.data?.error || "Failed to change password");
         }
@@ -44,14 +52,11 @@ function ProfilePage() {
             {username ? (
                 <div class="profile-info">
                     <p>Username: {username}</p>
-                    <p>Password: {"*".repeat(password.length)}</p>
-
-                    
+                    <p> Last Login: {lastLogin }</p>
                     <button onClick={() => setShowForm(!showForm)}>
                         {showForm ? "Cancel" : "Change Password"}
                     </button>
 
-                   
                     {showForm && (
                         <form onSubmit={handlePasswordChange}>
                             <input
@@ -73,7 +78,7 @@ function ProfilePage() {
                     )}
                 </div>
             ) : (
-                <p>No user logged in.</p>
+                <p>No user information available. Please login.</p>
             )}
 
             {message && <p>{message}</p>}

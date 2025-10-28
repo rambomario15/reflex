@@ -2,10 +2,15 @@ import express from "express";
 import { PrismaClient } from "../../generated/prisma/index.js";
 import bcrypt from "bcrypt";
 import e from "express";
-
+import crypto from "crypto";
 
 const router = express.Router();
 const prisma = new PrismaClient();
+
+const sessions = new Map();
+const generateSessionId = () => {
+  return crypto.randomBytes(32).toString('hex');
+};
 
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
@@ -14,20 +19,29 @@ router.post("/login", async (req, res) => {
     const user = await prisma.users.findUnique({ where: { username } });
 
     if (!user) return res.status(400).json({ error: "User not found" });
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({
-        error: "Wrong password",
-        expected: true,
+        error: "Invalid password",
       });
     }
 
-    res.cookie("username", username, {
-      httpOnly: false,
-      sameSite: "lax",
-      secure: false,
-      path: '/',
+    const sessionId = generateSessionId();
+
+    sessions.set(sessionId, {
+      userId: user.id,
+      username: user.username,
+      createdAt: new Date(),
     });
+
+    res.cookie("sessionId", sessionId, {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    });
+
     res.json({ message: "Login successful!" });
   } catch (err) {
     console.error(err);
