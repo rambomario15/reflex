@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import axios from "axios";
-import '../style/style.css'; // Adjust the path as needed
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
-
   const [form, setForm] = useState({ username: "", password: "" });
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -17,7 +18,14 @@ function LoginPage() {
       const res = await axios.post("http://localhost:5000/auth/login", form, {
         withCredentials: true,
       });
+
       setMessage(res.data.message || "Login successful!");
+
+      localStorage.setItem("loggedIn", "true");
+      localStorage.setItem("username", form.username);
+
+      navigate("/profile");
+
     } catch (err) {
       const data = err.response?.data;
       if (data?.error == "Invalid password") {
@@ -56,21 +64,6 @@ function LoginPage() {
         />
         <button class="btn" type="submit">Login</button>
       </form>
-      <br />
-      <button
-        class="btn"
-        onClick={() => (window.location.href = "/signup")}
-        style={{ padding: "0.5rem", cursor: "pointer", width: "100px" }}
-      >
-        Sign Up
-      </button>
-      <button
-        class="btn"
-        onClick={() => (window.location.href = "/profile")}
-        style={{ padding: "0.5rem", cursor: "pointer", marginLeft: "1rem", width: "100px" }}
-      >
-        Profile Page
-      </button>
       <p>{message}</p>
     </div>
   );

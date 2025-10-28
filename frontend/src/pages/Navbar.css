@@ -1,0 +1,16 @@
+.navbar-link {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #00aced;
+  color: #fff;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.navbar-link:hover {
+  background-color: #00aced;
+}
+
+.navbar-active {
+  background-color: #00aced;
+}

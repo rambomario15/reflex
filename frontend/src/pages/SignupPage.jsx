@@ -66,11 +66,8 @@ function SignupPage() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button class="btn" type="submit" style={{ padding: "0.5rem", cursor: "pointer" }}>
-          Sign Up
-        </button>
-        <button class="btn" onClick={() => (window.location.href = "/")} style={{ padding: "0.5rem", cursor: "pointer" }}>
-          Login Page
+        <button type="submit" style={{ padding: "0.5rem", cursor: "pointer" }}>
+          Create Account
         </button>
       </form>
       {message && <p style={{ marginTop: "1rem" }}>{message}</p>}
