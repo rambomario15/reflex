@@ -6,6 +6,7 @@ Steps to run WebServer:
 - clone repo using "git clone https://github.com/rambomario15/reflex"
 - cd into /reflex/backend
 - run "npm install" to download all dependencies
+- run "Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass" if you encounter an UnauthorizedAccess error for a temporary fix
 - create .env file inside /backend/prisma
     - should be at the same level as schema.prisma
 - in the .env file, add the following string:
