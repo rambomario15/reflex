@@ -7,18 +7,40 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(false);
 
-  useEffect(() => {
-    const isLoggedIn = localStorage.getItem("loggedIn") === "true";
-    setLoggedIn(isLoggedIn);
-  }, [location.pathname]);
+  const checkSession = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/auth/check-session", {
+        method: "GET",
+        credentials: "include",
+      });
 
-  const handleLogout = () => {
-    localStorage.removeItem("loggedIn");
-    localStorage.removeItem("username");
+      if (response.ok) {
+        setLoggedIn(true);
+        alert("papple");
+      } else {
+        setLoggedIn(false);
+      }
+    } catch (error) {
+      console.error("Error checking session:", error);
+      setLoggedIn(false);
+    }
+  };
+  useEffect(() => {
+    checkSession();
+  }, [location.pathname]);
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:5000/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error("Error during server logout:", error);
+    }
+
     setLoggedIn(false);
     navigate("/");
   };
-
   return (
     <nav
       style={{

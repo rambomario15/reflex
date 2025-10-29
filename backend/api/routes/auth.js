@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 
 const sessions = new Map();
 const generateSessionId = () => {
-  return crypto.randomBytes(32).toString('hex');
+  return crypto.randomBytes(32).toString("hex");
 };
 
 router.post("/login", async (req, res) => {
@@ -38,7 +38,7 @@ router.post("/login", async (req, res) => {
     res.cookie("sessionId", sessionId, {
       httpOnly: true,
       sameSite: "lax",
-      secure: process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === "production",
       maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
@@ -48,7 +48,6 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
-
 
 router.post("/signup", async (req, res) => {
   const { username, email, password } = req.body;
@@ -67,7 +66,6 @@ router.post("/signup", async (req, res) => {
         .status(409)
         .json({ message: "Username or email already exists" });
     }
-
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -92,10 +90,6 @@ router.post("/signup", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-router.post("/logout", (req, res) => {
-  res.clearCookie("username", { path: "/" });
-  res.json({ message: "Logged out successfully" });
-});
 
 router.post("/change-password", async (req, res) => {
   const { username, currentPassword, newPassword } = req.body;
@@ -105,14 +99,12 @@ router.post("/change-password", async (req, res) => {
 
     if (!user) return res.status(404).json({ error: "User not found" });
 
-
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
       return res.status(400).json({ error: "Current password is incorrect" });
     }
 
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-
 
     await prisma.users.update({
       where: { username },
@@ -124,6 +116,38 @@ router.post("/change-password", async (req, res) => {
     console.error("Change password error:", err);
     res.status(500).json({ error: "Server error" });
   }
+});
+
+router.post("/check-session", async (req, res) => {
+  const sessionId = req.cookies.sessionId;
+  if (!sessionId) {
+    return res
+      .status(401)
+      .json({ isAuthenticated: false, error: "No session ID found" });
+  }
+
+  const session = sessions.get(sessionId);
+
+  if (session) {
+    return res.json({ isAuthenticated: true, username: session.username });
+  } else {
+    res.clearCookie("sessionId");
+    return res
+      .status(401)
+      .json({ isAuthenticated: false, error: "Invalid session" });
+  }
+});
+
+router.post("/logout", (req, res) => {
+  const sessionId = req.cookies.sessionId;
+
+  if (sessionId) {
+    sessions.delete(sessionId);
+  }
+
+  res.clearCookie("sessionId");
+
+  res.json({ message: "Logout successful" });
 });
 
 export default router;

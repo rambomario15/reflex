@@ -13,7 +13,7 @@ function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setMessage("Logging in...");
     try {
       const res = await axios.post("http://localhost:5000/auth/login", form, {
         withCredentials: true,
@@ -21,17 +21,15 @@ function LoginPage() {
 
       setMessage(res.data.message || "Login successful!");
 
-      localStorage.setItem("username", form.username);
       navigate("/profile");
-
     } catch (err) {
       const data = err.response?.data;
       if (data?.error === "Invalid password") {
-        setMessage(
-          `Incorrect Password`
-        );
+        setMessage(`Incorrect Password`);
+      } else if (data?.error === "User not found") {
+        setMessage(`User not found`);
       } else {
-        setMessage(data?.error || "Login failed.");
+        setMessage(data?.error || "Login failed. Server error.");
       }
     }
   };
@@ -47,8 +45,7 @@ function LoginPage() {
           placeholder="Username"
           value={form.username}
           onChange={handleChange}
-          style={{ marginRight: '5px' }}
-
+          style={{ marginRight: "5px" }}
         />
         <input
           class="input-group"
@@ -57,10 +54,11 @@ function LoginPage() {
           placeholder="Password"
           value={form.password}
           onChange={handleChange}
-          style={{ marginRight: '5px' }}
-
+          style={{ marginRight: "5px" }}
         />
-        <button class="btn" type="submit">Login</button>
+        <button class="btn" type="submit">
+          Login
+        </button>
       </form>
       <p>{message}</p>
     </div>
