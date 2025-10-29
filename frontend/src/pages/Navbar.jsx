@@ -43,6 +43,19 @@ export default function Navbar() {
       </Link>
 
       <div style={{ display: "flex", gap: "1rem" }}>
+        <Link
+          to="/aim-trainer"
+          className={`navbar-link ${
+            location.pathname === "/aim-trainer" ? "navbar-active" : ""
+          }`}
+          style={{
+            fontSize: "1.2rem",
+            fontWeight: "bold",
+          }}
+        >
+          Aim Trainer
+        </Link>
+
         {!loggedIn && (
           <>
             <Link
