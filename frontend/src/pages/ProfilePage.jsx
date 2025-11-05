@@ -11,12 +11,30 @@ function ProfilePage() {
     const [lastLogin, setLastLogin] = useState("");
     const navigate = useNavigate();
 
+    // runs everytime you navigate, gets username from session ID
+    const getUsername = async () => {
+        try {
+            const res = await axios.post("http://localhost:5000/auth/check-session", {}, {
+                withCredentials: true
+            });
+
+            if (res.data.isAuthenticated) {
+                setUsername(res.data.username)
+                const now = new Date();
+                setLastLogin(now.toLocaleDateString());
+                return;
+            } else {
+                setUsername("N/A")
+                return;
+            }
+        } catch (err) {
+            setUsername("something went wrong...")
+            return;
+        }
+    }
+
     useEffect(() => {
-        const storedUsername = localStorage.getItem("username");
-        if (storedUsername) {
-            setUsername(storedUsername);
-            setLastLogin(localStorage.getItem("createdAt") || "N/A");
-        } else { }
+        getUsername();
     }, [navigate]);
 
     const handlePasswordChange = async (e) => {
@@ -52,7 +70,7 @@ function ProfilePage() {
             {username ? (
                 <div class="profile-info">
                     <p>Username: {username}</p>
-                    <p> Last Login: {lastLogin }</p>
+                    <p> Last Login: {lastLogin}</p>
                     <button onClick={() => setShowForm(!showForm)}>
                         {showForm ? "Cancel" : "Change Password"}
                     </button>

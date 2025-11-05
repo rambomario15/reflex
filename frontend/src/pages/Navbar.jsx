@@ -1,33 +1,39 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Navbar.css";
+import axios from "axios";
 
 export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(false);
 
+  // checks session id to update if you are logged in or not
   const checkSession = async () => {
     try {
-      const response = await fetch("http://localhost:5000/auth/check-session", {
-        method: "GET",
-        credentials: "include",
+      // returns a bool isAuthenticated to show if the session was found
+      const res = await axios.post("http://localhost:5000/auth/check-session", {}, {
+        withCredentials: true
       });
 
-      if (response.ok) {
-        setLoggedIn(true);
-        alert("papple");
+      if (res.data.isAuthenticated) {
+        setLoggedIn(true)
+        return res.data.username;
       } else {
-        setLoggedIn(false);
+        setLoggedIn(false)
+        return null;
       }
-    } catch (error) {
-      console.error("Error checking session:", error);
-      setLoggedIn(false);
+    } catch (err) {
+      setLoggedIn(false)
+      return null;
     }
   };
+
+  // runs everytime you load
   useEffect(() => {
     checkSession();
   }, [location.pathname]);
+
   const handleLogout = async () => {
     try {
       await fetch("http://localhost:5000/auth/logout", {
@@ -41,6 +47,7 @@ export default function Navbar() {
     setLoggedIn(false);
     navigate("/");
   };
+
   return (
     <nav
       style={{
@@ -53,9 +60,8 @@ export default function Navbar() {
     >
       <Link
         to="/"
-        className={`navbar-link ${
-          location.pathname === "/" ? "navbar-active" : ""
-        }`}
+        className={`navbar-link ${location.pathname === "/" ? "navbar-active" : ""
+          }`}
         style={{
           fontSize: "1.2rem",
           fontWeight: "bold",
@@ -65,34 +71,20 @@ export default function Navbar() {
       </Link>
 
       <div style={{ display: "flex", gap: "1rem" }}>
-        <Link
-          to="/aim-trainer"
-          className={`navbar-link ${
-            location.pathname === "/aim-trainer" ? "navbar-active" : ""
-          }`}
-          style={{
-            fontSize: "1.2rem",
-            fontWeight: "bold",
-          }}
-        >
-          Aim Trainer
-        </Link>
 
         {!loggedIn && (
           <>
             <Link
               to="/login"
-              className={`navbar-link ${
-                location.pathname === "/login" ? "navbar-active" : ""
-              }`}
+              className={`navbar-link ${location.pathname === "/login" ? "navbar-active" : ""
+                }`}
             >
               Login
             </Link>
             <Link
               to="/signup"
-              className={`navbar-link ${
-                location.pathname === "/signup" ? "navbar-active" : ""
-              }`}
+              className={`navbar-link ${location.pathname === "/signup" ? "navbar-active" : ""
+                }`}
             >
               Sign Up
             </Link>
@@ -101,10 +93,23 @@ export default function Navbar() {
 
         {loggedIn && (
           <Link
+            to="/aim-trainer"
+            className={`navbar-link ${location.pathname === "/aim-trainer" ? "navbar-active" : ""
+              }`}
+            style={{
+              fontSize: "1.2rem",
+              fontWeight: "bold",
+            }}
+          >
+            Aim Trainer
+          </Link>
+        )}
+
+        {loggedIn && (
+          <Link
             to="/profile"
-            className={`navbar-link ${
-              location.pathname === "/profile" ? "navbar-active" : ""
-            }`}
+            className={`navbar-link ${location.pathname === "/profile" ? "navbar-active" : ""
+              }`}
           >
             Profile
           </Link>
