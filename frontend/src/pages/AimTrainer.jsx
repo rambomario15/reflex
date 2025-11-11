@@ -10,6 +10,7 @@ function AimTrainer() {
     const [timeLeft, setTimeLeft] = useState(TIME_LIMIT); // TIME_LIMIT-second timer
     const [isPlaying, setIsPlaying] = useState(false);
     const [hitTimes, setHitTimes] = useState([]); // track reaction times
+    const [misses, setMisses] = useState(0); // track misses
     const lastHitTime = useRef(null);
     const target = useRef({ x: 100, y: 100, radius: 36 });
     const [username, setUsername] = useState("");
@@ -42,9 +43,21 @@ function AimTrainer() {
 
     // updates the db with the score
     const updateDB = async () => {
+        // calculate average speed (modified from avgTime)
+    const avgSpeed =
+        hitTimes.length > 0
+            ? (hitTimes.reduce((a, b) => a + b, 0) / hitTimes.length).toFixed(3)
+            : null;
+
+    // calculate accuracy
+    const accuracy =
+        (score + misses) > 0
+            ? ((score / (score + misses)) * 100).toFixed(2)
+            : null;
+
         try {
             const res = await axios.post("http://localhost:5000/update/update-score",
-                { username, score },    // can update this line with wtv we want to store in db
+                { username, score, misses,accuracy,speed: avgSpeed },    // can update this line with wtv we want to store in db
                 { withCredentials: true }
             );
         } catch (err) {
@@ -118,6 +131,7 @@ function AimTrainer() {
             moveTarget(ctx);
         } else {
             console.log("Missed target");
+            setMisses(prev => prev + 1);
         }
     };
 

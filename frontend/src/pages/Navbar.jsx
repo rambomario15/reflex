@@ -113,7 +113,19 @@ export default function Navbar() {
           >
             Profile
           </Link>
+          
         )}
+        {loggedIn && (
+          <Link
+            to="/leaderboard"
+            className={`navbar-link ${location.pathname === "/leaderboard" ? "navbar-active" : ""
+              }`}
+          >
+            Leaderboard
+          </Link>
+          
+        )}
+        
 
         {loggedIn && (
           <button
