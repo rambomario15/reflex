@@ -19,8 +19,8 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use("/auth", authRoutes);
 app.use("/auth", authLimiter);
+app.use("/auth", authRoutes);
 app.use("/update", scoreRoutes)
 
 app.listen(5000, () => console.log("Server running on port 5000"));

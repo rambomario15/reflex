@@ -24,8 +24,12 @@ function LoginPage() {
       navigate("/profile");
     } catch (err) {
       const data = err.response?.data;
+       if (err.response?.status === 429) {
+    setMessage(data.message || "Too many attempts. Try again later.");
+    return;
+      }
       if (data?.error === "Invalid password") {
-        setMessage(`Incorrect Password`);
+        setMessage(`Incorrect Username or Password`); // Changed so it doesn't reveal which one is wrong
       } else if (data?.error === "User not found") {
         setMessage(`User not found`);
       } else {
