@@ -12,6 +12,20 @@ const generateSessionId = () => {
   return crypto.randomBytes(32).toString("hex");
 };
 
+// password must be longer than 8 chars and contain at least one number
+function validatePassword(password) {
+  if (password.length < 8) {
+    return "Password must be at least 8 characters long.";
+  }
+
+  const numberRegex = /[0-9]/;
+  if (!numberRegex.test(password)) {
+    return "Password must contain at least one number.";
+  }
+
+  return null;
+}
+
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
@@ -55,6 +69,12 @@ router.post("/signup", async (req, res) => {
   try {
     if (!username || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // simple password rules
+    const pwdError = validatePassword(password);
+    if (pwdError) {
+      return res.status(400).json({ message: pwdError });
     }
 
     const existingUser = await prisma.users.findFirst({
@@ -102,6 +122,12 @@ router.post("/change-password", async (req, res) => {
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
       return res.status(400).json({ error: "Current password is incorrect" });
+    }
+
+    // simple password rules
+    const pwdError = validatePassword(newPassword);
+    if (pwdError) {
+      return res.status(400).json({ error: pwdError });
     }
 
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
