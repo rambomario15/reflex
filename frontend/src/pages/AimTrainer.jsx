@@ -56,7 +56,7 @@ function AimTrainer() {
             : null;
 
         try {
-            const res = await axios.post("http://localhost:5000/update/update-score",
+            const res = await axios.post("http://localhost:5000/update/aim-trainer",
                 { username, score, misses,accuracy,speed: avgSpeed },    // can update this line with wtv we want to store in db
                 { withCredentials: true }
             );

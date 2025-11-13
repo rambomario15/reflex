@@ -104,6 +104,19 @@ export default function Navbar() {
             Aim Trainer
           </Link>
         )}
+        {loggedIn && (
+          <Link
+            to="/reaction-time"
+            className={`navbar-link ${location.pathname === "/reaction-time" ? "navbar-active" : ""
+              }`}
+            style={{
+              fontSize: "1.2rem",
+              fontWeight: "bold",
+            }}
+          >
+            Reaction Time
+          </Link>
+        )}
 
         {loggedIn && (
           <Link
