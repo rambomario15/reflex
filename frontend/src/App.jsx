@@ -5,6 +5,8 @@ import ProfilePage from "./pages/ProfilePage";
 import AimTrainer from "./pages/AimTrainer";
 import Navbar from "./pages/Navbar";
 import HomePage from "./pages/HomePage";
+import LeaderboardPage from "./pages/LeaderboardPage";
+
 
 export default function App() {
   return (
@@ -16,6 +18,8 @@ export default function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/aim-trainer" element={<AimTrainer />} />
+        <Route path="/leaderboard" element={<LeaderboardPage />} />
+
       </Routes>
     </Router>
   );

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+// import '../style/style.css'; // Adjust the path as needed
 
 function SignupPage() {
   const [username, setUsername] = useState("");
@@ -36,12 +37,13 @@ function SignupPage() {
     <div
       style={{ maxWidth: "400px", margin: "2rem auto", textAlign: "center" }}
     >
-      <h2>Create an Account</h2>
+      <h2 class="title">Create an Account</h2>
       <form
         onSubmit={handleSubmit}
         style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
       >
         <input
+          class="input-group"
           type="text"
           placeholder="Username"
           value={username}
@@ -49,6 +51,7 @@ function SignupPage() {
           required
         />
         <input
+          class="input-group"
           type="email"
           placeholder="Email"
           value={email}
@@ -56,6 +59,7 @@ function SignupPage() {
           required
         />
         <input
+          class="input-group"
           type="password"
           placeholder="Password"
           value={password}

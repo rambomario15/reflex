@@ -13,7 +13,7 @@ function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setMessage("Logging in...");
     try {
       const res = await axios.post("http://localhost:5000/auth/login", form, {
         withCredentials: true,
@@ -21,42 +21,48 @@ function LoginPage() {
 
       setMessage(res.data.message || "Login successful!");
 
-      localStorage.setItem("loggedIn", "true");
-      localStorage.setItem("username", form.username);
-
       navigate("/profile");
-
     } catch (err) {
       const data = err.response?.data;
-      if (data?.expected) {
-        setMessage(
-          `Invalid password. For testing, the correct password is: ${data.expected}`
-        );
+       if (err.response?.status === 429) {
+    setMessage(data.message || "Too many attempts. Try again later.");
+    return;
+      }
+      if (data?.error === "Invalid password") {
+        setMessage(`Incorrect Username or Password`); // Changed so it doesn't reveal which one is wrong
+      } else if (data?.error === "User not found") {
+        setMessage(`User not found`);
       } else {
-        setMessage(data?.error || "Login failed.");
+        setMessage(data?.error || "Login failed. Server error.");
       }
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
+    <div class="login-page">
+      <h1 class="title">Login</h1>
+      <form onSubmit={handleSubmit} class="form">
         <input
+          class="input-group"
           type="text"
           name="username"
           placeholder="Username"
           value={form.username}
           onChange={handleChange}
+          style={{ marginRight: "5px" }}
         />
         <input
+          class="input-group"
           type="password"
           name="password"
           placeholder="Password"
           value={form.password}
           onChange={handleChange}
+          style={{ marginRight: "5px" }}
         />
-        <button type="submit">Login</button>
+        <button class="btn" type="submit">
+          Login
+        </button>
       </form>
       <p>{message}</p>
     </div>

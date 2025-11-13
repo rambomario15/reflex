@@ -1,13 +1,69 @@
 import React, { useRef, useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+const TIME_LIMIT = 30        // change to wtv you want
 
 function AimTrainer() {
     const canvasRef = useRef(null);
     const [score, setScore] = useState(0);
-    const [timeLeft, setTimeLeft] = useState(30); // 30-second timer
+    const [timeLeft, setTimeLeft] = useState(TIME_LIMIT); // TIME_LIMIT-second timer
     const [isPlaying, setIsPlaying] = useState(false);
     const [hitTimes, setHitTimes] = useState([]); // track reaction times
+    const [misses, setMisses] = useState(0); // track misses
     const lastHitTime = useRef(null);
     const target = useRef({ x: 100, y: 100, radius: 36 });
+    const [username, setUsername] = useState("");
+    const navigate = useNavigate();
+
+    // this gets run every time you navigate to the page, sets username for db updating purposes
+    const getUsername = async () => {
+        try {
+            // checks session id to get username if logged in
+            const res = await axios.post("http://localhost:5000/auth/check-session", {}, {
+                withCredentials: true
+            });
+
+            if (res.data.isAuthenticated) {
+                setUsername(res.data.username)
+                return;
+            } else {
+                setUsername("")
+                return;
+            }
+        } catch (err) {
+            return;
+        }
+    }
+
+    // runs getUsername() everytime you navigate to this page
+    useEffect(() => {
+        getUsername();
+    }, [navigate]);
+
+    // updates the db with the score
+    const updateDB = async () => {
+        // calculate average speed (modified from avgTime)
+    const avgSpeed =
+        hitTimes.length > 0
+            ? (hitTimes.reduce((a, b) => a + b, 0) / hitTimes.length).toFixed(3)
+            : null;
+
+    // calculate accuracy
+    const accuracy =
+        (score + misses) > 0
+            ? ((score / (score + misses)) * 100).toFixed(2)
+            : null;
+
+        try {
+            const res = await axios.post("http://localhost:5000/update/update-score",
+                { username, score, misses,accuracy,speed: avgSpeed },    // can update this line with wtv we want to store in db
+                { withCredentials: true }
+            );
+        } catch (err) {
+            console.error("Update score failed:", err);
+        }
+    }
 
     // draw target
     const drawTarget = (ctx) => {
@@ -75,16 +131,17 @@ function AimTrainer() {
             moveTarget(ctx);
         } else {
             console.log("Missed target");
+            setMisses(prev => prev + 1);
         }
     };
 
     // start/resume game
     const startGame = () => {
-        if (timeLeft === 0 || timeLeft === 30) {
+        if (timeLeft === 0 || timeLeft === TIME_LIMIT) {
             // New game (either fresh start or after previous game ended)
             setScore(0);           // reset score
             setHitTimes([]);       // reset reaction times
-            setTimeLeft(30);       // reset timer
+            setTimeLeft(TIME_LIMIT);       // reset timer
             lastHitTime.current = Date.now(); // start reaction timer
             setIsPlaying(true);
         } else if (!isPlaying && timeLeft > 0) {
@@ -103,6 +160,7 @@ function AimTrainer() {
         if (!isPlaying) return;
         if (timeLeft <= 0) {
             setIsPlaying(false);
+            updateDB(); // where we update score
             return;
         }
         const timer = setTimeout(() => setTimeLeft((t) => t - 1), 1000);
@@ -200,7 +258,7 @@ function AimTrainer() {
                         onClick={startGame}
                         style={{ padding: "0.5rem 1rem", cursor: "pointer" }}
                     >
-                        {timeLeft === 30 ? "Start Game" : "Resume Game"}
+                        {timeLeft === TIME_LIMIT ? "Start Game" : "Resume Game"}
                     </button>
                 )}
             </div>

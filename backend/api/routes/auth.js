@@ -1,10 +1,30 @@
 import express from "express";
 import { PrismaClient } from "../../generated/prisma/index.js";
 import bcrypt from "bcrypt";
-
+import e from "express";
+import crypto from "crypto";
 
 const router = express.Router();
 const prisma = new PrismaClient();
+
+const sessions = new Map();
+const generateSessionId = () => {
+  return crypto.randomBytes(32).toString("hex");
+};
+
+// password must be longer than 8 chars and contain at least one number
+function validatePassword(password) {
+  if (password.length < 8) {
+    return "Password must be at least 8 characters long.";
+  }
+
+  const numberRegex = /[0-9]/;
+  if (!numberRegex.test(password)) {
+    return "Password must contain at least one number.";
+  }
+
+  return null;
+}
 
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
@@ -14,7 +34,6 @@ router.post("/login", async (req, res) => {
 
     if (!user) return res.status(400).json({ error: "User not found" });
 
-
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({
@@ -22,16 +41,21 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    res.cookie("username", username, {
-      httpOnly: false,
-      sameSite: "lax",
-      secure: false,
+    const sessionId = generateSessionId();
+
+    sessions.set(sessionId, {
+      userId: user.id,
+      username: user.username,
+      createdAt: new Date(),
     });
-    res.cookie("password", password, {
-      httpOnly: false,
+
+    res.cookie("sessionId", sessionId, {
+      httpOnly: true,
       sameSite: "lax",
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     });
+
     res.json({ message: "Login successful!" });
   } catch (err) {
     console.error(err);
@@ -39,14 +63,18 @@ router.post("/login", async (req, res) => {
   }
 });
 
-
 router.post("/signup", async (req, res) => {
   const { username, email, password } = req.body;
-  console.log("Signup body:", req.body);
 
   try {
     if (!username || !email || !password) {
       return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // simple password rules
+    const pwdError = validatePassword(password);
+    if (pwdError) {
+      return res.status(400).json({ message: pwdError });
     }
 
     const existingUser = await prisma.users.findFirst({
@@ -59,7 +87,6 @@ router.post("/signup", async (req, res) => {
         .json({ message: "Username or email already exists" });
     }
 
- 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await prisma.users.create({
@@ -84,23 +111,6 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-
-router.post("/profile", async (req, res) => {
-  const cookieHeader = req.headers.cookie;
-  if (cookieHeader) {
-    const cookies = cookieHeader.split(';').reduce((acc, cookie) => {
-      const parts = cookie.split('=');
-      if (parts.length === 2) {
-        acc[parts[0].trim()] = parts[1].trim();
-      }
-      return acc;
-    }, {});
-    res.send(`Manual cookie value: ${cookies.myManualCookie || 'Not found'}`);
-  } else {
-    res.send('No cookies found.');
-  }
-});
-
 router.post("/change-password", async (req, res) => {
   const { username, currentPassword, newPassword } = req.body;
 
@@ -109,14 +119,18 @@ router.post("/change-password", async (req, res) => {
 
     if (!user) return res.status(404).json({ error: "User not found" });
 
-
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
       return res.status(400).json({ error: "Current password is incorrect" });
     }
 
-    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    // simple password rules
+    const pwdError = validatePassword(newPassword);
+    if (pwdError) {
+      return res.status(400).json({ error: pwdError });
+    }
 
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
     await prisma.users.update({
       where: { username },
@@ -128,6 +142,38 @@ router.post("/change-password", async (req, res) => {
     console.error("Change password error:", err);
     res.status(500).json({ error: "Server error" });
   }
+});
+
+router.post("/check-session", async (req, res) => {
+  const sessionId = req.cookies.sessionId;
+  if (!sessionId) {
+    return res
+      .status(401)
+      .json({ isAuthenticated: false, error: "No session ID found" });
+  }
+
+  const session = sessions.get(sessionId);
+
+  if (session) {
+    return res.json({ isAuthenticated: true, username: session.username });
+  } else {
+    res.clearCookie("sessionId");
+    return res
+      .status(401)
+      .json({ isAuthenticated: false, error: "Invalid session" });
+  }
+});
+
+router.post("/logout", (req, res) => {
+  const sessionId = req.cookies.sessionId;
+
+  if (sessionId) {
+    sessions.delete(sessionId);
+  }
+
+  res.clearCookie("sessionId");
+
+  res.json({ message: "Logout successful" });
 });
 
 export default router;
