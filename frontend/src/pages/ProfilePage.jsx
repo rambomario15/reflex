@@ -46,6 +46,33 @@ function ProfilePage() {
 
   // Fetch highscore whenever username changes
   useEffect(() => {
+    const getAllHighscores = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:5000/profile/highscores",
+          {
+            params: { username },
+            withCredentials: true,
+          }
+        );
+        setAimTrainerHighscore(
+          res.data["Aim Trainer"] ? res.data["Aim Trainer"].hits : null
+        );
+        setReactionTimeHighscore(
+          res.data["Reaction Time"]
+            ? res.data["Reaction Time"].reactionTime
+            : null
+        );
+        setTrackingHighscore(
+          res.data["Tracking"] ? res.data["Tracking"].accuracy : null
+        );
+
+        return res.data;
+      } catch (err) {
+        return null;
+      }
+    };
+
     if (
       username &&
       username !== "N/A" &&
@@ -82,31 +109,6 @@ function ProfilePage() {
       setShowForm(false);
     } catch (err) {
       setMessage(err.response?.data?.error || "Failed to change password");
-    }
-  };
-
-  const getAllHighscores = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/profile/highscores", {
-        params: { username },
-        withCredentials: true,
-      });
-      setAimTrainerHighscore(
-        res.data["Aim Trainer"] ? res.data["Aim Trainer"].hits : null
-      );
-      setReactionTimeHighscore(
-        res.data["Reaction Time"]
-          ? res.data["Reaction Time"].reactionTime
-          : null
-      );
-      setTrackingHighscore(
-        res.data["Tracking"] ? res.data["Tracking"].accuracy : "N/A"
-      );
-
-      return res.data;
-    } catch (err) {
-      console.error("Error fetching highscores:", err);
-      return null;
     }
   };
 
