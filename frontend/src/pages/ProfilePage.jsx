@@ -56,15 +56,15 @@ function ProfilePage() {
           }
         );
         setAimTrainerHighscore(
-          res.data["Aim Trainer"] ? res.data["Aim Trainer"].hits : null
+          res.data["Aim Trainer"] ? res.data["Aim Trainer"].hits : "N/A"
         );
         setReactionTimeHighscore(
           res.data["Reaction Time"]
             ? res.data["Reaction Time"].reactionTime
-            : null
+            : "N/A"
         );
         setTrackingHighscore(
-          res.data["Tracking"] ? res.data["Tracking"].accuracy : null
+          res.data["Tracking"] ? res.data["Tracking"].accuracy : "N/A"
         );
 
         return res.data;
@@ -119,9 +119,20 @@ function ProfilePage() {
         <div class="profile-info">
           <p>Username: {username}</p>
           <p> Last Login: {lastLogin}</p>
-          <h3>Aim Trainer Highscore: {aimTrainerHighscore}</h3>
-          <h3>Reaction Time Highscore: {reactionTimeHighscore}</h3>
-          <h3>Tracking Highscore: {trackingHighscore}</h3>
+          <h3>
+            Aim Trainer Highscore:{" "}
+            <span style={{ fontWeight: "normal" }}>{aimTrainerHighscore}</span>
+          </h3>
+          <h3>
+            Reaction Time Highscore:{" "}
+            <span style={{ fontWeight: "normal" }}>
+              {reactionTimeHighscore}
+            </span>
+          </h3>
+          <h3>
+            Tracking Highscore:{" "}
+            <span style={{ fontWeight: "normal" }}>{trackingHighscore}</span>
+          </h3>
           <br />
 
           <button onClick={() => setShowForm(!showForm)}>

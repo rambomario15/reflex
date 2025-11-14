@@ -3,39 +3,6 @@ import { PrismaClient } from "../../generated/prisma/index.js";
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// router.get("/aim-trainer/highscore", async (req, res) => {
-//   const { username } = req.query;
-//   try {
-//     const user = await prisma.users.findUnique({
-//       where: { username },
-//     });
-//     if (!user) {
-//       return res.status(404).json({ message: `User not found: ${username}` });
-//     }
-//     const game = await prisma.games.findUnique({
-//       where: { name: "Aim Trainer" },
-//     });
-//     if (!game) {
-//       return res.status(404).json({ message: "Aim Trainer game not found" });
-//     }
-//     const highscore = await prisma.scores.findFirst({
-//       where: {
-//         user_id: user.id,
-//         game_id: game.id,
-//       },
-//       orderBy: { hits: "desc" },
-//     });
-//     if (!highscore) {
-//       return res.status(404).json({ message: "No scores found for this user" });
-//     }
-//     res.json(highscore);
-//   } catch (error) {
-//     res
-//       .status(500)
-//       .json({ message: "Error fetching highscore", error: error.message });
-//   }
-// });
-
 router.get("/highscores", async (req, res) => {
   const { username } = req.query;
   try {
