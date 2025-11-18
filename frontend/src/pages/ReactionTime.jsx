@@ -10,13 +10,11 @@ function ReactionTime() {
     const [reactionTime, setReactionTime] = useState(null);
     const navigate = useNavigate();
 
-    // Game state variables
-    const [isAwaiting, setIsAwaiting] = useState(false); // true when showing red, waiting for random delay
-    const [isReady, setIsReady] = useState(false);     // true when showing green, timer is running
-    const startTimeRef = useRef(null);                   // Stores the time the green screen appeared
-    const timeoutRef = useRef(null);                     // Stores the timeout ID for the green screen delay
+    const [isAwaiting, setIsAwaiting] = useState(false);
+    const [isReady, setIsReady] = useState(false);
+    const startTimeRef = useRef(null);
+    const timeoutRef = useRef(null);
 
-    // --- Authentication and DB Logic (Keeping yours) ---
     const getUsername = async () => {
         try {
             const res = await axios.post("http://localhost:5000/auth/check-session", {}, {
@@ -50,9 +48,7 @@ function ReactionTime() {
             console.error("Update score failed:", err);
         }
     }
-    // --- End Authentication and DB Logic ---
 
-    // --- Canvas Sizing Logic (Keeping yours) ---
     const [canvasSize, setCanvasSize] = useState(() => {
         if (typeof window === "undefined") return { width: 600, height: 400 };
         return {
@@ -72,24 +68,17 @@ function ReactionTime() {
         window.addEventListener("resize", updateSize);
         return () => window.removeEventListener("resize", updateSize);
     }, []);
-    // --- End Canvas Sizing Logic ---
 
-    // --- Game Logic ---
-
-    // Function to draw the canvas based on game state
     const drawCanvas = (color, text) => {
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext("2d");
 
-        // Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Set background color
         ctx.fillStyle = color;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Draw text
         ctx.fillStyle = "white";
         ctx.font = "bold 36px 'Lucida Console', 'Monaco', monospace";
         ctx.textAlign = "center";
@@ -97,72 +86,59 @@ function ReactionTime() {
         ctx.fillText(text, canvas.width / 2, canvas.height / 2);
     };
 
-    // Main game loop effect
     useEffect(() => {
-        // Initial state: Red, Awaiting
         if (isPlaying) {
             setIsReady(false);
             setIsAwaiting(true);
-            drawCanvas("#810505ff", "Wait for Green..."); // Red state
+            drawCanvas("#810505ff", "");
 
-            // Set up a random timeout for the green color change
-            const randomDelay = Math.random() * 4000 + 2000; // 2000ms (2s) to 6000ms (6s)
+            const randomDelay = Math.random() * 4000 + 1000;
             timeoutRef.current = setTimeout(() => {
-                // Change to Ready (Green) state
                 setIsAwaiting(false);
                 setIsReady(true);
-                drawCanvas("#009900ff", "CLICK NOW!"); // Green state
-                startTimeRef.current = performance.now(); // Start the internal timer
+                drawCanvas("#009900ff", "");
+                startTimeRef.current = performance.now();
             }, randomDelay);
         } else {
-            // Cleanup on game end or reset
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
                 timeoutRef.current = null;
             }
-            // Draw initial state or final score state
+
             const initialColor = reactionTime !== null ? "#810505ff" : "#810505ff";
             const initialText = reactionTime !== null ? "Reaction Time Done" : "Click Start Test";
             drawCanvas(initialColor, initialText);
         }
 
-        // Cleanup function
         return () => {
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
             }
         };
-    }, [isPlaying, reactionTime]); // Reruns when isPlaying or reactionTime changes
+    }, [isPlaying, reactionTime]);
 
-    // Handle the canvas click
     const handleCanvasClick = () => {
         if (!isPlaying) {
-            // If game is not playing, clicking the canvas does nothing (start button is used)
             return;
         }
 
         if (isReady) {
-            // Case 1: Clicked while Green (Success)
             const endTime = performance.now();
             const timeTaken = Math.round(endTime - startTimeRef.current);
 
-            // Update state
             setReactionTime(timeTaken);
             setIsPlaying(false);
             setIsReady(false);
             setIsAwaiting(false);
 
-            // Update DB with the score
             updateDB(timeTaken);
 
         } else if (isAwaiting) {
-            // Case 2: Clicked while Red (Too Early)
-            // Stop the game, clear timeout, and set a specific error time
+
             if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
             }
 
-            // Set a special value to indicate a false start
             setReactionTime("Too Early!");
             setIsPlaying(false);
             setIsReady(false);
@@ -181,9 +157,6 @@ function ReactionTime() {
         setIsPlaying(true);
     };
 
-    // --- End Game Logic ---
-
-    // Final render
     const canvasColor = isReady ? "#009900ff" : "#810505ff";
     let canvasInstruction = "";
 

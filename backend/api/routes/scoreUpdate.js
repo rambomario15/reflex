@@ -16,8 +16,6 @@ router.post("/aim-trainer", async (req, res) => {    // path: update/update-scor
     if (!user) {
       return res.status(404).json({ message: `User not found: ${username}` });
     }
-    // makes sure the game is in the game table
-    // ex: Aim Trainer, Reaction Time
     const game = await prisma.games.findUnique({
       where: { name: "Aim Trainer" },
     });
@@ -59,7 +57,7 @@ router.get("/leaderboard/:gameKey", async (req, res) => {
       gameName = "Reaction Time";
       orderByField = "reactionTime";
       orderByDirection = "asc";
-    } else if(gameKey === "tracking") {
+    } else if (gameKey === "tracking") {
       gameName = "Tracking";
       orderByField = "accuracy";
       orderByDirection = "desc";
@@ -78,7 +76,7 @@ router.get("/leaderboard/:gameKey", async (req, res) => {
 
     const scores = await prisma.scores.findMany({
       where: { game_id: game.id },
-      orderBy: { [orderByField]: orderByDirection }, 
+      orderBy: { [orderByField]: orderByDirection },
       take: 20,
       include: {
         users: true,
@@ -87,16 +85,16 @@ router.get("/leaderboard/:gameKey", async (req, res) => {
 
     const formatted = scores.map((s) => {
       const primaryScore = s[orderByField];
-      if(gameKey === "reaction") {
-        return{
+      if (gameKey === "reaction") {
+        return {
           id: s.id,
           username: s.users.username,
           reactionTime: s.reactionTime,
           play_time: s.play_time,
         }
       }
-      else if(gameKey === "aim")  {
-        return{
+      else if (gameKey === "aim") {
+        return {
           id: s.id,
           username: s.users.username,
           hits: s.hits,
@@ -106,8 +104,8 @@ router.get("/leaderboard/:gameKey", async (req, res) => {
           play_time: s.play_time,
         }
       }
-      else if(gameKey === "tracking") {
-        return{
+      else if (gameKey === "tracking") {
+        return {
           id: s.id,
           username: s.users.username,
           accuracy: s.accuracy,
@@ -125,24 +123,21 @@ router.get("/leaderboard/:gameKey", async (req, res) => {
   }
 });
 
-router.post("/reaction-time", async (req, res) => {    // path: update/reaction-time
+router.post("/reaction-time", async (req, res) => {
   const { username, reactionTime } = req.body;
   try {
-    // makes sure there is a user
     const user = await prisma.users.findUnique({
       where: { username },
     });
     if (!user) {
       return res.status(404).json({ message: `User not found: ${username}` });
     }
-    // makes sure the game is in the game table
     const game = await prisma.games.findUnique({
       where: { name: "Reaction Time" },
     });
     if (!game) {
       return res.status(404).json({ message: "Game not found" });
     }
-    // adds score to scores table
     await prisma.scores.create({
       data: {
         user_id: user.id,

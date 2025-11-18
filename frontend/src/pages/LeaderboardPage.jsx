@@ -31,7 +31,7 @@ function LeaderboardPage() {
     <div>
       <select
         onChange={handleGameChange}
-        value={selectedGame} // Control the select's value
+        value={selectedGame}
         style={{ margin: "1rem", padding: "0.5rem", fontSize: "1rem", borderRadius: "8px", position: "absolute", right: "0.25rem", top: "4rem" }}
       >
         <option value="aim">Aim Trainer</option>
