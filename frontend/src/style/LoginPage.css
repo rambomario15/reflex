@@ -1,0 +1,87 @@
+/* Center the login box */
+.login-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #111;
+}
+
+/* Login box layout */
+.login-box {
+  background-color: #1a1a1a;
+  padding: 2.5rem 3rem;
+  border-radius: 12px;
+  width: 380px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+.login-title {
+  color: #f5f5f5;
+  margin-bottom: 1.8rem;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+/* Input container */
+.input-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+/* The textbox style similar to image */
+.input-field {
+  width: 100%;
+  padding: 14px 16px;
+  background-color: #222; /* dark gray */
+  border: 2px solid #333;
+  border-radius: 10px;
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.25s ease;
+}
+
+/* Focus effect */
+.input-field:focus {
+  border-color: #00bfff;
+}
+
+/* Error style like the screenshot */
+.input-error {
+  border-color: #ff4d4d !important;
+}
+
+/* Error text under input */
+.error-text {
+  color: #ff4d4d;
+  font-size: 0.85rem;
+  margin-top: 6px;
+}
+
+/* Error message after submit */
+.error-global {
+  margin-top: 1rem;
+  color: #ff4d4d;
+  font-size: 0.9rem;
+}
+
+/* Login button */
+.login-btn {
+  width: 100%;
+  background-color: #00bfff;
+  color: #000;
+  padding: 12px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.login-btn:hover {
+  background-color: #40d4ff;
+  transform: translateY(-2px);
+}
