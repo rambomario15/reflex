@@ -6,7 +6,7 @@ import AimTrainer from "./pages/AimTrainer";
 import Navbar from "./pages/Navbar";
 import HomePage from "./pages/HomePage";
 import LeaderboardPage from "./pages/LeaderboardPage";
-
+import ReactionTime from "./pages/ReactionTime";
 
 export default function App() {
   return (
@@ -19,7 +19,7 @@ export default function App() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/aim-trainer" element={<AimTrainer />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
-
+        <Route path="/reaction-time" element={<ReactionTime />} />
       </Routes>
     </Router>
   );

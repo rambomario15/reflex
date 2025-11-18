@@ -4,7 +4,7 @@ import { PrismaClient } from "../../generated/prisma/index.js";
 const router = express.Router();
 const prisma = new PrismaClient();
 
-router.post("/update-score", async (req, res) => {    // path: update/update-score
+router.post("/aim-trainer", async (req, res) => {    // path: update/update-score
   const { username, score, misses, accuracy, speed } = req.body;
 
   try {
@@ -16,8 +16,6 @@ router.post("/update-score", async (req, res) => {    // path: update/update-sco
     if (!user) {
       return res.status(404).json({ message: `User not found: ${username}` });
     }
-    // makes sure the game is in the game table
-    // ex: Aim Trainer, Reaction Time
     const game = await prisma.games.findUnique({
       where: { name: "Aim Trainer" },
     });
@@ -28,16 +26,16 @@ router.post("/update-score", async (req, res) => {    // path: update/update-sco
 
     // adds score to scores table
     await prisma.scores.create({
-  data: {
-    user_id: user.id,
-    game_id: game.id,
-    hits: score,
-    misses: misses,
-    accuracy: accuracy,
-    speed: speed,
-    play_time: new Date(),
-  },
-});
+      data: {
+        user_id: user.id,
+        game_id: game.id,
+        hits: score,
+        misses: misses,
+        accuracy: accuracy,
+        speed: speed,
+        play_time: new Date(),
+      },
+    });
 
 
     res.status(200).json({ message: "Score recorded successfully!" });
@@ -46,48 +44,112 @@ router.post("/update-score", async (req, res) => {    // path: update/update-sco
   }
 });
 
-router.get("/leaderboard", async (req, res) => {
+router.get("/leaderboard/:gameKey", async (req, res) => {
   try {
-    // Find the Aim Trainer game ID
-    const aimTrainer = await prisma.games.findUnique({
-      where: { name: "Aim Trainer" }
-    });
+    const gameKey = req.params.gameKey;
+    let gameName, orderByField, orderByDirection;
 
-    if (!aimTrainer) {
-      return res.status(404).json({ message: "Aim Trainer game not found" });
+    if (gameKey === "aim") {
+      gameName = "Aim Trainer";
+      orderByField = "hits";
+      orderByDirection = "desc";
+    } else if (gameKey === "reaction") {
+      gameName = "Reaction Time";
+      orderByField = "reactionTime";
+      orderByDirection = "asc";
+    } else if (gameKey === "tracking") {
+      gameName = "Tracking";
+      orderByField = "accuracy";
+      orderByDirection = "desc";
+    }
+    else {
+      return res.status(400).json({ message: "Invalid game specified in the URL." });
     }
 
-    // Fetch top scores for that game
+    const game = await prisma.games.findUnique({
+      where: { name: gameName }
+    });
+
+    if (!game) {
+      return res.status(404).json({ message: `${gameName} game not found in the database.` });
+    }
+
     const scores = await prisma.scores.findMany({
-      where: { game_id: aimTrainer.id },
-      orderBy: { hits: "desc" },
+      where: { game_id: game.id },
+      orderBy: { [orderByField]: orderByDirection },
       take: 20,
       include: {
         users: true,
-        games: true
       }
     });
 
-    // Format results for frontend
-    const formatted = scores.map((s) => ({
-  id: s.id,
-  username: s.users.username,
-  hits: s.hits,
-  misses: s.misses,
-  accuracy: s.accuracy,
-  speed: s.speed,
-  play_time: s.play_time,
-}));
+    const formatted = scores.map((s) => {
+      const primaryScore = s[orderByField];
+      if (gameKey === "reaction") {
+        return {
+          id: s.id,
+          username: s.users.username,
+          reactionTime: s.reactionTime,
+          play_time: s.play_time,
+        }
+      }
+      else if (gameKey === "aim") {
+        return {
+          id: s.id,
+          username: s.users.username,
+          hits: s.hits,
+          misses: s.misses,
+          accuracy: s.accuracy,
+          speed: s.speed,
+          play_time: s.play_time,
+        }
+      }
+      else if (gameKey === "tracking") {
+        return {
+          id: s.id,
+          username: s.users.username,
+          accuracy: s.accuracy,
+          play_time: s.play_time,
+        }
+      }
+      return {};
+    });
 
     res.json(formatted);
 
   } catch (err) {
-    console.error("Leaderboard fetch error:", err);
+    console.error("Dynamic Leaderboard fetch error:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
-
-
+router.post("/reaction-time", async (req, res) => {
+  const { username, reactionTime } = req.body;
+  try {
+    const user = await prisma.users.findUnique({
+      where: { username },
+    });
+    if (!user) {
+      return res.status(404).json({ message: `User not found: ${username}` });
+    }
+    const game = await prisma.games.findUnique({
+      where: { name: "Reaction Time" },
+    });
+    if (!game) {
+      return res.status(404).json({ message: "Game not found" });
+    }
+    await prisma.scores.create({
+      data: {
+        user_id: user.id,
+        game_id: game.id,
+        play_time: new Date(),
+        reactionTime: reactionTime
+      },
+    });
+    res.status(200).json({ message: "Score recorded successfully!" });
+  } catch (err) {
+    res.status(500).json({ message: `Server error: ${err}` });
+  }
+});
 
 export default router;
