@@ -14,8 +14,9 @@ Steps to run WebServer:
     - replace user with your username (default should be postgres)
     - replace password with your password
     - the database should be called ReflexDB, if not change to whatever you named it to be
-- run "npx prisma generate"
-- you might need to run "npx prisma migrate deploy"
+- run "npx prisma generate" in backend/
+- you might need to run "npx prisma migrate deploy", also in backend/
+- to seed the database with the three game records, in backend/ run "npx tsx prisma\seed\seed.ts"
 - now you should be able to run "node index.js" to start the server, make sure you are in the correct folder
 - open a new terminal, and cd into /frontend
 - run "npm install"

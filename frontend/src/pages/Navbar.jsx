@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import "./Navbar.css";
+import "../style/Navbar.css";
 import axios from "axios";
 
 export default function Navbar() {
@@ -102,6 +102,19 @@ export default function Navbar() {
             }}
           >
             Aim Trainer
+          </Link>
+        )}
+        {loggedIn && (
+          <Link
+            to="/reaction-time"
+            className={`navbar-link ${location.pathname === "/reaction-time" ? "navbar-active" : ""
+              }`}
+            style={{
+              fontSize: "1.2rem",
+              fontWeight: "bold",
+            }}
+          >
+            Reaction Time
           </Link>
         )}
 
