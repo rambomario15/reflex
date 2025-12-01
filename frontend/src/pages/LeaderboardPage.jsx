@@ -11,7 +11,7 @@ function LeaderboardPage() {
   };
 
   const getTitle = () => {
-    return selectedGame === "aim" ? "Aim Trainer Leaderboard" : "Reaction Time Leaderboard";
+    return selectedGame === "aim" ? "Aim Trainer Leaderboard" : "reaction" ? "Reaction Time Leaderboard" : "Tracking Game Leaderboard";
   };
 
   useEffect(() => {
