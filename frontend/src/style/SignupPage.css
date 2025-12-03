@@ -1,0 +1,84 @@
+/* Full page background stays BLACK */
+.signup-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #111; /* BLACK */
+}
+
+/* The signup box stays BLACK */
+.signup-box {
+  background-color: #1a1a1a; /* dark black box */
+  padding: 2.5rem 3rem;
+  border-radius: 12px;
+  width: 380px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+.signup-title {
+  color: #f5f5f5;
+  margin-bottom: 1.8rem;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+/* Input container */
+.input-group {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+/* Inputs (same as login) */
+.input-field {
+  width: 100%;
+  padding: 14px 16px;
+  background-color: #222;
+  border: 2px solid #333;
+  border-radius: 10px;
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.25s ease;
+}
+
+/* Focus outline */
+.input-field:focus {
+  border-color: #00bfff;
+}
+
+/* Error styling */
+.input-error {
+  border-color: #ff4d4d !important;
+}
+
+.error-text {
+  color: #ff4d4d;
+  font-size: 0.85rem;
+  margin-top: 6px;
+}
+
+.error-global {
+  margin-top: 1rem;
+  color: #ff4d4d;
+  font-size: 0.9rem;
+}
+
+/* Button matches Login button */
+.signup-btn {
+  width: 100%;
+  background-color: #00bfff;
+  color: #000;
+  padding: 12px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.signup-btn:hover {
+  background-color: #40d4ff;
+  transform: translateY(-2px);
+}

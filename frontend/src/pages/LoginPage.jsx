@@ -1,72 +1,70 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import "../style/LoginPage.css";
 
-function LoginPage() {
-  const [form, setForm] = useState({ username: "", password: "" });
+export default function LoginPage() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("Logging in...");
+    setMessage("");
+
+    if (!username || !password) {
+      setMessage("Required");
+      return;
+    }
+
     try {
-      const res = await axios.post("http://localhost:5000/auth/login", form, {
-        withCredentials: true,
-      });
+      const res = await axios.post(
+        "http://localhost:5000/auth/login",
+        { username, password },
+        { withCredentials: true }
+      );
 
-      setMessage(res.data.message || "Login successful!");
-
-      navigate("/profile");
+      if (res.status === 200) {
+        window.location.href = "/";
+      }
     } catch (err) {
       const data = err.response?.data;
-       if (err.response?.status === 429) {
-    setMessage(data.message || "Too many attempts. Try again later.");
-    return;
-      }
-      if (data?.error === "Invalid password") {
-        setMessage(`Incorrect Username or Password`); // Changed so it doesn't reveal which one is wrong
-      } else if (data?.error === "User not found") {
-        setMessage(`User not found`);
-      } else {
-        setMessage(data?.error || "Login failed. Server error.");
-      }
+      setMessage(data?.error || "Login failed.");
     }
   };
 
   return (
-    <div class="login-page">
-      <h1 class="title">Login</h1>
-      <form onSubmit={handleSubmit} class="form">
-        <input
-          class="input-group"
-          type="text"
-          name="username"
-          placeholder="Username"
-          value={form.username}
-          onChange={handleChange}
-          style={{ marginRight: "5px" }}
-        />
-        <input
-          class="input-group"
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          style={{ marginRight: "5px" }}
-        />
-        <button class="btn" type="submit">
-          Login
-        </button>
+    <div className="login-container">
+      <form className="login-box" onSubmit={handleSubmit}>
+        <h1 className="login-title">Login to Reflex Lab</h1>
+
+        <div className="input-group">
+          <input
+            className={`input-field ${message && !username ? "input-error" : ""}`}
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          {message && !username && <p className="error-text">Required</p>}
+        </div>
+
+        <div className="input-group">
+          <input
+            className={`input-field ${message && !password ? "input-error" : ""}`}
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          {message && !password && <p className="error-text">Required</p>}
+        </div>
+
+        <button className="login-btn" type="submit">Login</button>
+
+        {message && username && password && (
+          <p className="error-global">{message}</p>
+        )}
       </form>
-      <p>{message}</p>
     </div>
   );
 }
-
-export default LoginPage;

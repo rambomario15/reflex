@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-// import '../style/style.css'; // Adjust the path as needed
+import axios from "axios";
+import "../style/SignupPage.css";
 
-function SignupPage() {
+export default function SignupPage() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -10,69 +11,72 @@ function SignupPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!username || !email || !password) {
+      setMessage("Required");
+      return;
+    }
+
     try {
-      const response = await fetch("http://localhost:5000/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password }),
-      });
+      const res = await axios.post(
+        "http://localhost:5000/auth/signup",
+        { username, email, password }
+      );
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setMessage("Account created successfully! You can now log in.");
-        setUsername("");
-        setEmail("");
-        setPassword("");
-      } else {
-        setMessage(`${data.message || "Signup failed"}`);
+      if (res.status === 201) {
+        window.location.href = "/login";
       }
     } catch (err) {
-      console.error("Signup error:", err);
-      setMessage("Could not connect to the server.");
+      const data = err.response?.data;
+      setMessage(data?.message || "Signup failed.");
     }
   };
 
   return (
-    <div
-      style={{ maxWidth: "400px", margin: "2rem auto", textAlign: "center" }}
-    >
-      <h2 class="title">Create an Account</h2>
-      <form
-        onSubmit={handleSubmit}
-        style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
-      >
-        <input
-          class="input-group"
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        <input
-          class="input-group"
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          class="input-group"
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit" style={{ padding: "0.5rem", cursor: "pointer" }}>
+    <div className="signup-container">
+      <form className="signup-box" onSubmit={handleSubmit}>
+        <h1 className="signup-title">Reflex Lab Sign Up</h1>
+
+        <div className="input-group">
+          <input
+            className={`input-field ${message && !username ? "input-error" : ""}`}
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          {message && !username && <p className="error-text">Required</p>}
+        </div>
+
+        <div className="input-group">
+          <input
+            className={`input-field ${message && !email ? "input-error" : ""}`}
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          {message && !email && <p className="error-text">Required</p>}
+        </div>
+
+        <div className="input-group">
+          <input
+            className={`input-field ${message && !password ? "input-error" : ""}`}
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          {message && !password && <p className="error-text">Required</p>}
+        </div>
+
+        <button className="signup-btn" type="submit">
           Create Account
         </button>
+
+        {message && username && email && password && (
+          <p className="error-global">{message}</p>
+        )}
       </form>
-      {message && <p style={{ marginTop: "1rem" }}>{message}</p>}
     </div>
   );
 }
-
-export default SignupPage;
