@@ -104,6 +104,7 @@ export default function Navbar() {
             Aim Trainer
           </Link>
         )}
+
         {loggedIn && (
           <Link
             to="/reaction-time"
@@ -115,6 +116,20 @@ export default function Navbar() {
             }}
           >
             Reaction Time
+          </Link>
+        )}
+
+        {loggedIn && (
+          <Link
+            to="/target-following"
+            className={`navbar-link ${location.pathname === "/target-following" ? "navbar-active" : ""
+              }`}
+            style={{
+              fontSize: "1.2rem",
+              fontWeight: "bold",
+            }}
+          >
+            Target Following
           </Link>
         )}
 
