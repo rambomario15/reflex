@@ -283,18 +283,20 @@ function ProfilePage() {
             <h3>
               Aim Trainer Highscore:{" "}
               <span style={{ fontWeight: "normal" }}>
-                {aimTrainerHighscore}
+                {aimTrainerHighscore} hits
               </span>
             </h3>
             <h3>
               Reaction Time Highscore:{" "}
               <span style={{ fontWeight: "normal" }}>
-                {reactionTimeHighscore}
+                {reactionTimeHighscore} ms
               </span>
             </h3>
             <h3>
-              Tracking Highscore:{" "}
-              <span style={{ fontWeight: "normal" }}>{trackingHighscore}</span>
+              Target Following Highscore:{" "}
+              <span style={{ fontWeight: "normal" }}>
+                {trackingHighscore} seconds
+              </span>
             </h3>
 
             <br />
@@ -362,7 +364,7 @@ function ProfilePage() {
               trackingScores &&
               trackingScores.length > 0 && (
                 <div style={{ marginBottom: "40px" }}>
-                  <h3>Target Following Time Over Time</h3>
+                  <h3>Target Following Times</h3>
                   <Line data={trackingLineData} options={trackingLineOptions} />
                 </div>
               )

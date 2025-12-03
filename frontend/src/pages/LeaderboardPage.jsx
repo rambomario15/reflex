@@ -12,7 +12,7 @@ function LeaderboardPage() {
   const getTitle = () => {
     return selectedGame === "aim"
       ? "Aim Trainer Leaderboard"
-      : "reaction"
+      : selectedGame === "reaction"
       ? "Reaction Time Leaderboard"
       : "Tracking Game Leaderboard";
   };

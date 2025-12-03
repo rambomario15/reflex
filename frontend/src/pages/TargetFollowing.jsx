@@ -265,8 +265,8 @@ function TargetFollowing() {
       <div style={{ position: "relative", display: "inline-block" }}>
         <canvas
           ref={canvasRef}
-          width={1200}
-          height={500}
+          width={CANVAS_WIDTH}
+          height={CANVAS_HEIGHT}
           style={{
             border: "2px solid black",
             backgroundColor: "white",

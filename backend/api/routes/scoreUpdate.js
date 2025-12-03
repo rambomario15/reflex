@@ -161,12 +161,12 @@ router.post("/reaction-time", async (req, res) => {
   }
 });
 router.post("/target-following", async (req, res) => {
+  const { username, hoverTime } = req.body;
   if (parseFloat(hoverTime) > 600) {
     return res.status(400).json({
-      message: `Invalid hover time: Score cannot exceed ${maxScoreSeconds} seconds (10 minutes).`,
+      message: `Invalid hover time: Score cannot exceed 600 seconds (10 minutes).`,
     });
   }
-  const { username, hoverTime } = req.body;
   try {
     const user = await prisma.users.findUnique({
       where: { username },
