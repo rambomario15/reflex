@@ -21,7 +21,6 @@ ChartJS.register(
   Legend
 );
 
-
 function ProfilePage() {
   const [username, setUsername] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
@@ -39,7 +38,6 @@ function ProfilePage() {
 
   const handleGameChange = (event) => {
     setSelectedGame(event.target.value);
-
   };
   const navigate = useNavigate();
 
@@ -109,7 +107,7 @@ function ProfilePage() {
     ) {
       getAllHighscores();
     }
-  }, [username]);
+  }, [username, selectedGame]);
   useEffect(() => {
     const getAllScores = async () => {
       try {
@@ -138,7 +136,7 @@ function ProfilePage() {
     ) {
       getAllScores();
     }
-  }, [username]);
+  }, [username, selectedGame]);
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
@@ -183,13 +181,22 @@ function ProfilePage() {
 
   // Labels: format each score's date
   const aimChartLabels = sortedAimScores.map((s) =>
-    new Date(s.play_time).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+    new Date(s.play_time).toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+    })
   );
   const reactionChartLabels = sortedReactionScores.map((s) =>
-    new Date(s.play_time).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+    new Date(s.play_time).toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+    })
   );
   const trackingChartLabels = sortedReactionScores.map((s) =>
-    new Date(s.play_time).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+    new Date(s.play_time).toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+    })
   );
 
   // Values: hits for each score
@@ -224,6 +231,19 @@ function ProfilePage() {
       },
     ],
   };
+  const trackingLineData = {
+    labels: trackingChartLabels,
+    datasets: [
+      {
+        label: "Target Following Time",
+        data: trackingChartValues,
+        borderColor: "rgba(54, 162, 235, 1)",
+        backgroundColor: "rgba(54, 162, 235, 0.3)",
+        tension: 0.5,
+        pointRadius: 4,
+      },
+    ],
+  };
 
   const aimLineOptions = {
     responsive: true,
@@ -237,9 +257,15 @@ function ProfilePage() {
       y: { beginAtZero: true },
     },
   };
+  const trackingLineOptions = {
+    responsive: true,
+    scales: {
+      y: { beginAtZero: true },
+    },
+  };
+
   return (
     <div>
-
       {username ? (
         <div
           className="profile-container"
@@ -248,10 +274,7 @@ function ProfilePage() {
             alignItems: "flex-start",
           }}
         >
-          <div
-            className="profile-info"
-            style={{ flex: 1, minWidth: "250px" }}
-          >
+          <div className="profile-info" style={{ flex: 1, minWidth: "250px" }}>
             <h2 className="title">Profile Page</h2>
 
             <p>Username: {username}</p>
@@ -259,7 +282,9 @@ function ProfilePage() {
 
             <h3>
               Aim Trainer Highscore:{" "}
-              <span style={{ fontWeight: "normal" }}>{aimTrainerHighscore}</span>
+              <span style={{ fontWeight: "normal" }}>
+                {aimTrainerHighscore}
+              </span>
             </h3>
             <h3>
               Reaction Time Highscore:{" "}
@@ -297,34 +322,54 @@ function ProfilePage() {
             )}
           </div>
 
-          <div
-            className="profile-graph"
-            style={{ flex: 2, minWidth: "400px" }}
-          >
+          <div className="profile-graph" style={{ flex: 2, minWidth: "400px" }}>
             <select
               onChange={handleGameChange}
               value={selectedGame}
-              style={{ margin: "1rem", padding: "0.5rem", fontSize: "1rem", borderRadius: "8px", position: "absolute", right: "0.25rem", top: "4rem" }}
+              style={{
+                margin: "1rem",
+                padding: "0.5rem",
+                fontSize: "1rem",
+                borderRadius: "8px",
+                position: "absolute",
+                right: "0.25rem",
+                top: "4rem",
+              }}
             >
               <option value="aim">Aim Trainer</option>
               <option value="reaction">Reaction Time</option>
+              <option value="tracking">Target Following</option>
             </select>
-            {selectedGame == "aim" ?
-              (
-                aimTrainerScores && aimTrainerScores.length > 0 && (
-                  <div style={{ marginBottom: "40px" }}>
-                    <h3>Aim Trainer Scores Over Time</h3>
-                    <Line data={aimLineData} options={aimLineOptions} />
-                  </div>
-                )
-              ) : (
-                reactionTimeScores && reactionTimeScores.length > 0 && (
-                  <div style={{ marginBottom: "40px" }}>
-                    <h3>Reaction Time Speed over Time</h3>
-                    <Line data={reactionLineData} options={reactionLineOptions} />
-                  </div>
-                )
-              )}
+            {selectedGame == "aim" ? (
+              aimTrainerScores &&
+              aimTrainerScores.length > 0 && (
+                <div style={{ marginBottom: "40px" }}>
+                  <h3>Aim Trainer Scores Over Time</h3>
+                  <Line data={aimLineData} options={aimLineOptions} />
+                </div>
+              )
+            ) : selectedGame === "reaction" ? (
+              // ⏱️ REACTION Time Block
+              reactionTimeScores &&
+              reactionTimeScores.length > 0 && (
+                <div style={{ marginBottom: "40px" }}>
+                  <h3>Reaction Time Speed over Time</h3>
+                  <Line data={reactionLineData} options={reactionLineOptions} />
+                </div>
+              )
+            ) : selectedGame === "tracking" ? (
+              // 🚀 TARGET Following (Tracking) Block
+              trackingScores &&
+              trackingScores.length > 0 && (
+                <div style={{ marginBottom: "40px" }}>
+                  <h3>Target Following Time Over Time</h3>
+                  <Line data={trackingLineData} options={trackingLineOptions} />
+                </div>
+              )
+            ) : (
+              // Fallback (or other games if needed)
+              <p>Select a game to view your progress chart.</p>
+            )}
           </div>
         </div>
       ) : (
@@ -336,7 +381,6 @@ function ProfilePage() {
 
       {message && <p>{message}</p>}
     </div>
-
   );
 }
 
