@@ -7,6 +7,7 @@ import Navbar from "./pages/Navbar";
 import HomePage from "./pages/HomePage";
 import LeaderboardPage from "./pages/LeaderboardPage";
 import ReactionTime from "./pages/ReactionTime";
+import TargetFollowing from "./pages/TargetFollowing";
 
 export default function App() {
   return (
@@ -17,9 +18,10 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/aim-trainer" element={<AimTrainer />} />
         <Route path="/leaderboard" element={<LeaderboardPage />} />
+        <Route path="/aim-trainer" element={<AimTrainer />} />
         <Route path="/reaction-time" element={<ReactionTime />} />
+        <Route path="/target-following" element={<TargetFollowing />} />
       </Routes>
     </Router>
   );

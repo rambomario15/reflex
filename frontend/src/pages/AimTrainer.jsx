@@ -12,7 +12,7 @@ function AimTrainer() {
     const [hitTimes, setHitTimes] = useState([]); // track reaction times
     const [misses, setMisses] = useState(0); // track misses
     const lastHitTime = useRef(null);
-    const target = useRef({ x: 100, y: 100, radius: 36 });
+    const target = useRef({ x: 100, y: 100, radius: 36});
     const [username, setUsername] = useState("");
     const navigate = useNavigate();
 
@@ -71,22 +71,29 @@ function AimTrainer() {
 
         const { x, y, radius } = target.current;
 
-        // Outer red ring
         ctx.beginPath();
         ctx.arc(x, y, radius, 0, 2 * Math.PI);
-        ctx.fillStyle = "red"; // red
+        ctx.fillStyle = "black";
         ctx.fill();
 
-        // Middle white ring
         ctx.beginPath();
-        ctx.arc(x, y, radius * 0.66, 0, 2 * Math.PI);
-        ctx.fillStyle = "white";
+        ctx.arc(x, y, radius * 0.7, 0, 2 * Math.PI);
+        ctx.fillStyle = "blue";
         ctx.fill();
 
-        // Inner red circle
         ctx.beginPath();
-        ctx.arc(x, y, radius * 0.33, 0, 2 * Math.PI);
-        ctx.fillStyle = "red"; // red
+        ctx.arc(x, y, radius * 0.4, 0, 2 * Math.PI);
+        ctx.fillStyle = "red";
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(x, y, radius * 0.2, 0, 2 * Math.PI);
+        ctx.fillStyle = "yellow";
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(x, y, radius * 0.05, 0, 2 * Math.PI);
+        ctx.fillStyle = "green";
         ctx.fill();
     };
 
@@ -109,30 +116,30 @@ function AimTrainer() {
         const dx = x - target.current.x;
         const dy = y - target.current.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
+        const r = target.current.radius;
 
-        if (distance < target.current.radius) {
-            const now = Date.now();
-
-            console.log("Clicked inside target!");
-
-            if (lastHitTime.current !== null) {
-                const reactionTime = (now - lastHitTime.current) / 1000;
-                setHitTimes((prev) => [...prev, reactionTime]);
-                console.log(`Recorded reaction time: ${reactionTime}s`);
-                console.log("hitTimes array:", [...hitTimes, reactionTime]); // show what will be stored
-            } else {
-                console.log("First hit, no reaction time recorded");
-            }
-            lastHitTime.current = now;
-            console.log("Updated lastHitTime to:", lastHitTime.current);
-
-            setScore((prev) => prev + 1);
-            const ctx = canvasRef.current.getContext("2d");
-            moveTarget(ctx);
-        } else {
-            console.log("Missed target");
+        if (distance > target.current.radius) {
             setMisses(prev => prev + 1);
+            return;
         }
+        
+        let points = 0;
+        if (distance <= r * 0.05) points = 5;       // green (center)
+        else if (distance <= r * 0.2) points = 4;  // yellow
+        else if (distance <= r * 0.4) points = 3;   // red
+        else if (distance <= r * 0.7) points = 2;  // blue
+        else points = 1;                            // black (outer ring)
+
+        const now = Date.now();
+        if (lastHitTime.current !== null) {
+            const reactionTime = (now - lastHitTime.current) / 1000;
+            setHitTimes((prev) => [...prev, reactionTime]);
+        }
+        lastHitTime.current = now;
+        setScore((prev) => prev + points);
+
+        const ctx = canvasRef.current.getContext("2d");
+        moveTarget(ctx);
     };
 
     // start/resume game
